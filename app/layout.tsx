@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Oxygen } from 'next/font/google'
 import './globals.css'
 import { ConvexClientProvider } from '@/providers/ConvexClientProvider'
+import { cn } from '@/lib/utils'
 
 const oxygen = Oxygen({ weight: ['400', '700'], subsets: ['latin'] })
 
@@ -18,7 +19,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='en'>
-			<body className={oxygen.className}>
+			<body className={cn(oxygen.className, 'min-h-screen bg-background')}>
 				<ConvexClientProvider>{children}</ConvexClientProvider>
 			</body>
 		</html>
