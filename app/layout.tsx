@@ -19,7 +19,12 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='en'>
-			<body className={cn(oxygen.className, 'min-h-screen bg-background')}>
+			<body
+				className={cn(
+					oxygen.className,
+					'min-h-screen bg-background text-white'
+				)}
+			>
 				<ConvexClientProvider>{children}</ConvexClientProvider>
 			</body>
 		</html>
