@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Oxygen } from 'next/font/google'
 import './globals.css'
 import { ConvexClientProvider } from '@/providers/ConvexClientProvider'
+import { ThemeProvider } from '@/providers/theme-provider'
 import { cn } from '@/lib/utils'
 
 const oxygen = Oxygen({ weight: ['400', '700'], subsets: ['latin'] })
@@ -18,14 +19,11 @@ export default function RootLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<html lang='en'>
-			<body
-				className={cn(
-					oxygen.className,
-					'min-h-screen bg-background text-white'
-				)}
-			>
-				<ConvexClientProvider>{children}</ConvexClientProvider>
+		<html lang='en' className='h-full' style={{ colorScheme: 'dark' }}>
+			<body className={cn(oxygen.className, 'bg-background text-white h-full')}>
+				<ThemeProvider attribute='class' defaultTheme='system'>
+					<ConvexClientProvider>{children}</ConvexClientProvider>
+				</ThemeProvider>
 			</body>
 		</html>
 	)
