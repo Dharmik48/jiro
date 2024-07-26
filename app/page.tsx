@@ -1,12 +1,12 @@
+import OrganizationSidebar from '@/components/OrganizationSidebar'
 import Sidebar from '@/components/Sidebar'
-import { UserButton } from '@clerk/nextjs'
 
 export default function Home() {
 	return (
 		<main className='h-full'>
 			<Sidebar />
-			<div className='pl-16'>
-				<UserButton />
+			<div className='pl-16 h-full'>
+				<OrganizationSidebar />
 			</div>
 		</main>
 	)
