@@ -15,8 +15,8 @@ const NewOrgDialog = () => {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button variant='ghost' className='aspect-square'>
-					<Plus />
+				<Button variant='ghost' className='aspect-square w-fit p-0'>
+					<Plus size={24} />
 				</Button>
 			</DialogTrigger>
 			<DialogContent className='p-0 border-none'>
