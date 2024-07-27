@@ -7,18 +7,12 @@ import {
 	DialogTrigger,
 	DialogClose,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Plus, X } from 'lucide-react'
 import { CreateOrganization } from '@clerk/clerk-react'
 
-const NewOrgDialog = () => {
+const NewOrgDialog = ({ children }: { children: React.ReactNode }) => {
 	return (
 		<Dialog>
-			<DialogTrigger asChild>
-				<Button variant='ghost' className='aspect-square w-fit p-0'>
-					<Plus size={24} />
-				</Button>
-			</DialogTrigger>
+			<DialogTrigger asChild>{children}</DialogTrigger>
 			<DialogContent className='p-0 border-none'>
 				<DialogTitle className='sr-only'>Create Organization</DialogTitle>
 
