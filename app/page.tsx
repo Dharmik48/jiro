@@ -38,7 +38,7 @@ export default function Home({ searchParams }: Props) {
 								</NewOrgDialog>
 							</EmptyState>
 						) : (
-							<BoardsList query={searchParams} />
+							<BoardsList query={searchParams} orgId={organization.id} />
 						)}
 					</div>
 				</div>
