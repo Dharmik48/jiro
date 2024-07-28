@@ -21,7 +21,9 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='en' className='h-full' style={{ colorScheme: 'dark' }}>
-			<body className={cn(oxygen.className, 'bg-background text-white h-full')}>
+			<body
+				className={cn(oxygen.className, 'bg-background text-foreground h-full')}
+			>
 				<ThemeProvider attribute='class' defaultTheme='system'>
 					<ConvexClientProvider>
 						{children}
