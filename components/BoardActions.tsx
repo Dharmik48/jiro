@@ -34,7 +34,7 @@ const BoardActions = ({ id, title }: { id: string; title: string }) => {
 
 	const remove = async () => {
 		try {
-			await mutateRemove({ orgId: id })
+			await mutateRemove({ id })
 			toast.success('Deleted Successfully')
 		} catch (error) {
 			toast.error('Something went wrong.')

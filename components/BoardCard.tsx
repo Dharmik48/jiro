@@ -15,6 +15,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Skeleton } from './ui/skeleton'
 import BoardActions from './BoardActions'
+import { useApiMutations } from '@/hooks/use-api-mutations'
+import { api } from '@/convex/_generated/api'
+import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
 
 interface Props {
 	board: {
@@ -25,16 +29,39 @@ interface Props {
 		authorId: string
 		authorName: string
 		imageUrl: string
+		isFavorite: boolean
 	}
 }
 
 const BoardCard = ({ board }: Props) => {
 	const { userId } = useAuth()
+	const { mutate: mutateFavorite, pending: pendingFavorite } = useApiMutations(
+		api.boards.favorite
+	)
+	const { mutate: mutateUnFavorite, pending: pendingUnFavorite } =
+		useApiMutations(api.boards.unfavorite)
 
 	const author = board.authorId === userId ? 'You' : board.authorName
 	const createdAt = formatDistanceToNow(board._creationTime, {
 		addSuffix: true,
 	})
+
+	const toggleFavorite = async (e: React.MouseEvent) => {
+		e.stopPropagation()
+		e.preventDefault()
+		try {
+			if (board.isFavorite)
+				await mutateUnFavorite({ id: board._id }).then(() =>
+					toast.success('Board Unfavorited')
+				)
+			if (!board.isFavorite)
+				await mutateFavorite({ id: board._id }).then(() =>
+					toast.success('Board Favorited')
+				)
+		} catch (error: any) {
+			toast.error('Something went wrong')
+		}
+	}
 
 	return (
 		<Link
@@ -49,8 +76,18 @@ const BoardCard = ({ board }: Props) => {
 				</CardHeader>
 				<CardContent className='p-6 pb-2 flex justify-between'>
 					<CardTitle>{board.title}</CardTitle>
-					<button className='hover:text-primary opacity-0 group-hover:opacity-100 transition-all'>
-						<Star size={20} />
+					<button
+						className={cn(
+							'hover:text-primary opacity-0 group-hover:opacity-100 transition-all',
+							board.isFavorite && 'text-primary'
+						)}
+						onClick={toggleFavorite}
+						disabled={pendingFavorite || pendingUnFavorite}
+					>
+						<Star
+							size={20}
+							className={cn(board.isFavorite && 'fill-primary')}
+						/>
 					</button>
 				</CardContent>
 				<CardFooter className='text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity'>

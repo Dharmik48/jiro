@@ -44,8 +44,9 @@ export const get = query({
 	},
 	handler: async (ctx, args) => {
 		const user = await ctx.auth.getUserIdentity()
-
 		if (!user) throw new Error('Unauthorized')
+
+		const userId = user.subject
 
 		const boards = await ctx.db
 			.query('boards')
@@ -53,20 +54,41 @@ export const get = query({
 			.order('desc')
 			.collect()
 
-		return boards
+		const boardsWithFavorites = boards.map(board => {
+			return ctx.db
+				.query('userFavorites')
+				.withIndex('by_user_board', q =>
+					q.eq('userId', userId).eq('boardId', board._id)
+				)
+				.unique()
+				.then(favorite => ({ ...board, isFavorite: !!favorite }))
+		})
+
+		const data = Promise.all(boardsWithFavorites)
+		return data
 	},
 })
 
 export const remove = mutation({
 	args: {
-		orgId: v.id('boards'),
+		id: v.id('boards'),
 	},
 	handler: async (ctx, args) => {
 		const user = await ctx.auth.getUserIdentity()
-
 		if (!user) throw new Error('Unauthorized')
 
-		await ctx.db.delete(args.orgId)
+		const userId = user.subject
+
+		const existingFavorite = await ctx.db
+			.query('userFavorites')
+			.withIndex('by_user_board', q =>
+				q.eq('userId', userId).eq('boardId', args.id)
+			)
+			.unique()
+
+		if (existingFavorite) await ctx.db.delete(existingFavorite._id)
+
+		await ctx.db.delete(args.id)
 
 		return true
 	},
@@ -90,6 +112,66 @@ export const rename = mutation({
 		const board = await ctx.db.patch(args.orgId, {
 			title,
 		})
+
+		return board
+	},
+})
+
+export const favorite = mutation({
+	args: {
+		id: v.id('boards'),
+	},
+	handler: async (ctx, args) => {
+		const user = await ctx.auth.getUserIdentity()
+		if (!user) throw new Error('Unauthorized')
+
+		const userId = user.subject
+
+		const board = await ctx.db.get(args.id)
+		if (!board) throw new Error('Board not found')
+
+		const existing = await ctx.db
+			.query('userFavorites')
+			.withIndex('by_user_board_org', q =>
+				q.eq('userId', userId).eq('boardId', args.id).eq('orgId', board.orgId)
+			)
+			.unique()
+
+		if (existing) throw new Error('Board already favorited!')
+
+		await ctx.db.insert('userFavorites', {
+			userId,
+			boardId: args.id,
+			orgId: board.orgId,
+		})
+
+		return board
+	},
+})
+
+export const unfavorite = mutation({
+	args: {
+		id: v.id('boards'),
+	},
+	handler: async (ctx, args) => {
+		const user = await ctx.auth.getUserIdentity()
+		if (!user) throw new Error('Unauthorized')
+
+		const userId = user.subject
+
+		const board = await ctx.db.get(args.id)
+		if (!board) throw new Error('Board not found')
+
+		const existing = await ctx.db
+			.query('userFavorites')
+			.withIndex('by_user_board', q =>
+				q.eq('userId', userId).eq('boardId', args.id)
+			)
+			.unique()
+
+		if (!existing) throw new Error('Favorited board not found!')
+
+		await ctx.db.delete(existing._id)
 
 		return board
 	},

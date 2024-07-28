@@ -106,9 +106,11 @@ const BoardsList = ({ query, orgId }: Props) => {
 					<Plus size={36} />
 					<h4>New Board</h4>
 				</button>
-				{data.map(board => (
-					<BoardCard key={board._id} board={board} />
-				))}
+				{data
+					.filter(board => (favorite ? board.isFavorite : true))
+					.map(board => (
+						<BoardCard key={board._id} board={board} />
+					))}
 			</div>
 		</div>
 	)
