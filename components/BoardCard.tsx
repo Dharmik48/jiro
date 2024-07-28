@@ -14,6 +14,7 @@ import { Star } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Skeleton } from './ui/skeleton'
+import BoardActions from './BoardActions'
 
 interface Props {
 	board: {
@@ -40,7 +41,8 @@ const BoardCard = ({ board }: Props) => {
 			href={`/board/${board._id}`}
 			className='group aspect-[190/227] w-[256px]'
 		>
-			<Card className='border-border w-full overflow-hidden h-full flex flex-col'>
+			<Card className='relative border-border w-full overflow-hidden h-full flex flex-col'>
+				<BoardActions id={board._id} title={board.title} />
 				<CardHeader className='relative bg-primary/20 flex-1'>
 					<Image src={board.imageUrl} fill alt={board.title} className='p-4' />
 					<div className='bg-white/5 rounded-t-lg absolute inset-0 !mt-0 opacity-0 group-hover:opacity-100 transition-opacity'></div>
