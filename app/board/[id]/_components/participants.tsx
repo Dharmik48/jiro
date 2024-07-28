@@ -9,13 +9,10 @@ const Participants = () => {
 	const currentUser = useSelf()
 
 	return (
-		<div className='absolute top-4 right-4 rounded-lg border p-4 bg-secondary text-secondary-foreground border-border shadow-sm max-w-xs h-[58px] flex items-center'>
-			<div className='flex items-center'>
-				{[...users, currentUser].map(user => (
-					<Avatar
-						key={user.id}
-						className='h-8 w-8 -translate-x-2 first:translate-x-0'
-					>
+		<div className='absolute top-4 right-4 rounded-lg border p-4 bg-secondary text-secondary-foreground border-border shadow-sm max-w-xs h-12 flex items-center'>
+			<div className='flex items-center -space-x-2'>
+				{[...users, currentUser].map((user, i) => (
+					<Avatar key={user.id} className='h-8 w-8'>
 						<AvatarImage src={user.info.avatar} />
 						<AvatarFallback>{user.info.name.slice(0, 2)}</AvatarFallback>
 					</Avatar>
