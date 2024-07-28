@@ -41,18 +41,30 @@ export const create = mutation({
 export const get = query({
 	args: {
 		orgId: v.string(),
+		search: v.optional(v.string()),
 	},
 	handler: async (ctx, args) => {
 		const user = await ctx.auth.getUserIdentity()
 		if (!user) throw new Error('Unauthorized')
 
 		const userId = user.subject
+		const search = args.search as string
+		let boards = []
 
-		const boards = await ctx.db
-			.query('boards')
-			.withIndex('by_org', q => q.eq('orgId', args.orgId))
-			.order('desc')
-			.collect()
+		if (search) {
+			boards = await ctx.db
+				.query('boards')
+				.withSearchIndex('search_title', q =>
+					q.search('title', search).eq('orgId', args.orgId)
+				)
+				.collect()
+		} else {
+			boards = await ctx.db
+				.query('boards')
+				.withIndex('by_org', q => q.eq('orgId', args.orgId))
+				.order('desc')
+				.collect()
+		}
 
 		const boardsWithFavorites = boards.map(board => {
 			return ctx.db

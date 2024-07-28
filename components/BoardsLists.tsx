@@ -16,7 +16,9 @@ interface Props {
 const BoardsList = ({ query, orgId }: Props) => {
 	const { search, favorite } = query
 	const { pending, mutate: createBoard } = useApiMutations(api.boards.create)
-	const data = useQuery(api.boards.get, { orgId: orgId })
+	const data = useQuery(api.boards.get, {
+		orgId: orgId,
+	})
 
 	if (data === undefined)
 		return (
@@ -41,6 +43,18 @@ const BoardsList = ({ query, orgId }: Props) => {
 			</div>
 		)
 
+	const filteredData = data
+		.filter(board => (favorite ? board.isFavorite : true))
+		.filter(board =>
+			search
+				? search
+						.toString()
+						.toLowerCase()
+						.split('')
+						.every(char => board.title.toLowerCase().split('').includes(char))
+				: true
+		)
+
 	const handleClick = async () => {
 		if (!orgId) return
 		try {
@@ -53,7 +67,7 @@ const BoardsList = ({ query, orgId }: Props) => {
 			toast.error('Failed to create board')
 		}
 	}
-	if (!data.length && search)
+	if (!filteredData.length && search)
 		return (
 			<EmptyState
 				imageSrc='/empty-search.svg'
@@ -62,7 +76,7 @@ const BoardsList = ({ query, orgId }: Props) => {
 			/>
 		)
 
-	if (!data.length && favorite)
+	if (!filteredData.length && favorite)
 		return (
 			<EmptyState
 				imageSrc='/empty-favorite.svg'
@@ -71,7 +85,7 @@ const BoardsList = ({ query, orgId }: Props) => {
 			/>
 		)
 
-	if (!data.length)
+	if (!filteredData.length)
 		return (
 			<EmptyState
 				imageSrc='/empty-boards.svg'
@@ -106,11 +120,9 @@ const BoardsList = ({ query, orgId }: Props) => {
 					<Plus size={36} />
 					<h4>New Board</h4>
 				</button>
-				{data
-					.filter(board => (favorite ? board.isFavorite : true))
-					.map(board => (
-						<BoardCard key={board._id} board={board} />
-					))}
+				{filteredData.map(board => (
+					<BoardCard key={board._id} board={board} />
+				))}
 			</div>
 		</div>
 	)
