@@ -8,7 +8,6 @@ import OrganizationSidebar from '@/components/OrganizationSidebar'
 import Sidebar from '@/components/Sidebar'
 import { Button } from '@/components/ui/button'
 import { useOrganization } from '@clerk/nextjs'
-import Image from 'next/image'
 
 interface Props {
 	searchParams: { [key: string]: string | string[] | undefined }

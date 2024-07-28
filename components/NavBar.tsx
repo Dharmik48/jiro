@@ -8,7 +8,7 @@ import {
 } from '@clerk/nextjs'
 import { Input } from './ui/input'
 import { Search } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useDebounceValue } from 'usehooks-ts'
 import queryString from 'query-string'
@@ -19,6 +19,7 @@ const NavBar = () => {
 	const [value, setValue] = useState('')
 	const [debouncedValue] = useDebounceValue(value, 500)
 	const { organization, membership } = useOrganization()
+	const searchParams = useSearchParams()
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setValue(event.target.value)
@@ -30,6 +31,7 @@ const NavBar = () => {
 				url: '/',
 				query: {
 					search: debouncedValue,
+					favorite: searchParams?.get('favorite'),
 				},
 			},
 			{ skipEmptyString: true, skipNull: true }
