@@ -10,7 +10,7 @@ import {
 import { Id } from '@/convex/_generated/dataModel'
 import { useAuth } from '@clerk/nextjs'
 import { formatDistanceToNow } from 'date-fns'
-import { Star } from 'lucide-react'
+import { MoreHorizontal, Star } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Skeleton } from './ui/skeleton'
@@ -69,7 +69,11 @@ const BoardCard = ({ board }: Props) => {
 			className='group aspect-[190/227] w-[256px]'
 		>
 			<Card className='relative border-border w-full overflow-hidden h-full flex flex-col'>
-				<BoardActions id={board._id} title={board.title} />
+				<BoardActions id={board._id} title={board.title}>
+					<button className='absolute z-[5] right-4 top-2 opacity-0 group-hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm'>
+						<MoreHorizontal />
+					</button>
+				</BoardActions>
 				<CardHeader className='relative bg-primary/20 flex-1'>
 					<Image src={board.imageUrl} fill alt={board.title} className='p-4' />
 					<div className='bg-white/5 rounded-t-lg absolute inset-0 !mt-0 opacity-0 group-hover:opacity-100 transition-opacity'></div>

@@ -1,6 +1,7 @@
 import { Room } from '@/components/Room'
 import Canvas from './_components/Canvas'
 import Loading from './_components/Loading'
+import { Id } from '@/convex/_generated/dataModel'
 
 interface Props {
 	params: { id: string }
@@ -9,7 +10,7 @@ interface Props {
 const Board = ({ params }: Props) => {
 	return (
 		<Room roomId={params.id} fallback={<Loading />}>
-			<Canvas />
+			<Canvas id={params.id as Id<'boards'>} />
 		</Room>
 	)
 }

@@ -6,7 +6,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Link, MoreHorizontal, Pen, Trash } from 'lucide-react'
+import { Link, Pen, Trash } from 'lucide-react'
 import { toast } from 'sonner'
 import ConfirmationModal from './ConfirmationModal'
 import { useApiMutations } from '@/hooks/use-api-mutations'
@@ -15,7 +15,13 @@ import { Button } from './ui/button'
 import RenameModal from './RenameModal'
 import { useState } from 'react'
 
-const BoardActions = ({ id, title }: { id: string; title: string }) => {
+interface Props {
+	id: string
+	title: string
+	children: React.ReactNode
+}
+
+const BoardActions = ({ id, title, children }: Props) => {
 	const { mutate: mutateRemove, pending: pendingRemove } = useApiMutations(
 		api.boards.remove
 	)
@@ -56,11 +62,7 @@ const BoardActions = ({ id, title }: { id: string; title: string }) => {
 
 	return (
 		<DropdownMenu open={open} onOpenChange={setOpen}>
-			<DropdownMenuTrigger asChild>
-				<button className='absolute z-[5] right-4 top-2 opacity-0 group-hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm'>
-					<MoreHorizontal />
-				</button>
-			</DropdownMenuTrigger>
+			<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
 			<DropdownMenuContent
 				onClick={e => e.stopPropagation()}
 				side='right'
