@@ -7,6 +7,7 @@ import { useQuery } from 'convex/react'
 import BoardCard from './BoardCard'
 import { Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
 
 interface Props {
 	query: { [key: string]: string | string[] | undefined }
@@ -15,6 +16,7 @@ interface Props {
 
 const BoardsList = ({ query, orgId }: Props) => {
 	const { search, favorite } = query
+	const router = useRouter()
 	const { pending, mutate: createBoard } = useApiMutations(api.boards.create)
 	const data = useQuery(api.boards.get, {
 		orgId: orgId,
@@ -58,11 +60,13 @@ const BoardsList = ({ query, orgId }: Props) => {
 	const handleClick = async () => {
 		if (!orgId) return
 		try {
-			const res = await createBoard({
+			const board = await createBoard({
 				title: 'Untitled',
 				orgId,
 			})
+
 			toast.success('Board created')
+			router.push(`/board/${board}`)
 		} catch (error) {
 			toast.error('Failed to create board')
 		}
