@@ -26,6 +26,7 @@ const ToolButton = ({
 					isActive && 'bg-primary hover:bg-primary'
 				)}
 				variant={'ghost'}
+				onClick={onClick}
 				disabled={!!isDisabled}
 			>
 				{<Icon />}
