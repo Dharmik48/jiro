@@ -15,8 +15,8 @@ interface Props {
 
 export function Room({ children, roomId, fallback }: Props) {
 	return (
-		<LiveblocksProvider authEndpoint={'/api/liveblocks-auth'}>
-			<RoomProvider id={roomId}>
+		<LiveblocksProvider authEndpoint={'/api/liveblocks-auth'} throttle={16}>
+			<RoomProvider id={roomId} initialPresence={{ cursor: null }}>
 				<ClientSideSuspense fallback={fallback}>{children}</ClientSideSuspense>
 			</RoomProvider>
 		</LiveblocksProvider>
