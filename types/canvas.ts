@@ -13,7 +13,11 @@ export type CanvasState =
 	  }
 	| {
 			mode: CanvasMode.Inserting
-			layerType: LayerType
+			layerType:
+				| LayerType.Rectangle
+				| LayerType.Text
+				| LayerType.Ellipse
+				| LayerType.Note
 	  }
 	| {
 			mode: CanvasMode.Resizing
@@ -126,3 +130,10 @@ export enum Side {
 	Left = 4,
 	Right = 8,
 }
+
+export type Layer =
+	| RectangleLayer
+	| NoteLayer
+	| PathLayer
+	| EllipseLayer
+	| TextLayer
