@@ -11,7 +11,7 @@ interface Props {
 
 const HANDLE_WIDTH = 8
 
-const SelectionBox = memo(({}: Props) => {
+const SelectionBox = memo(({ onResizeHandlePointerDown }: Props) => {
 	const soleLayerId = useSelf(me =>
 		me.presence.selection.length ? me.presence.selection[0] : null
 	)
@@ -46,7 +46,10 @@ const SelectionBox = memo(({}: Props) => {
 							height: `${HANDLE_WIDTH}px`,
 							translate: `${bounds.x - HANDLE_WIDTH / 2}px ${bounds.y - HANDLE_WIDTH / 2}px`,
 						}}
-						onPointerCancel={e => e.stopPropagation()}
+						onPointerDown={e => {
+							e.stopPropagation()
+							onResizeHandlePointerDown(Side.Top + Side.Left, bounds)
+						}}
 					/>
 					<rect
 						className='fill-white stroke-1 stroke-blue-500'
@@ -58,7 +61,10 @@ const SelectionBox = memo(({}: Props) => {
 							height: `${HANDLE_WIDTH}px`,
 							translate: `${bounds.x + bounds.width / 2 - HANDLE_WIDTH / 2}px ${bounds.y - HANDLE_WIDTH / 2}px`,
 						}}
-						onPointerCancel={e => e.stopPropagation()}
+						onPointerDown={e => {
+							e.stopPropagation()
+							onResizeHandlePointerDown(Side.Top, bounds)
+						}}
 					/>
 					<rect
 						className='fill-white stroke-1 stroke-blue-500'
@@ -70,7 +76,10 @@ const SelectionBox = memo(({}: Props) => {
 							height: `${HANDLE_WIDTH}px`,
 							translate: `${bounds.x - HANDLE_WIDTH / 2 + bounds.width}px ${bounds.y - HANDLE_WIDTH / 2}px`,
 						}}
-						onPointerCancel={e => e.stopPropagation()}
+						onPointerDown={e => {
+							e.stopPropagation()
+							onResizeHandlePointerDown(Side.Top + Side.Right, bounds)
+						}}
 					/>
 					<rect
 						className='fill-white stroke-1 stroke-blue-500'
@@ -82,7 +91,10 @@ const SelectionBox = memo(({}: Props) => {
 							height: `${HANDLE_WIDTH}px`,
 							translate: `${bounds.x - HANDLE_WIDTH / 2 + bounds.width}px ${bounds.y + bounds.height / 2 - HANDLE_WIDTH / 2}px`,
 						}}
-						onPointerCancel={e => e.stopPropagation()}
+						onPointerDown={e => {
+							e.stopPropagation()
+							onResizeHandlePointerDown(Side.Right, bounds)
+						}}
 					/>
 					<rect
 						className='fill-white stroke-1 stroke-blue-500'
@@ -94,7 +106,10 @@ const SelectionBox = memo(({}: Props) => {
 							height: `${HANDLE_WIDTH}px`,
 							translate: `${bounds.x - HANDLE_WIDTH / 2 + bounds.width}px ${bounds.y - HANDLE_WIDTH / 2 + bounds.height}px`,
 						}}
-						onPointerCancel={e => e.stopPropagation()}
+						onPointerDown={e => {
+							e.stopPropagation()
+							onResizeHandlePointerDown(Side.Bottom + Side.Right, bounds)
+						}}
 					/>
 					<rect
 						className='fill-white stroke-1 stroke-blue-500'
@@ -106,7 +121,10 @@ const SelectionBox = memo(({}: Props) => {
 							height: `${HANDLE_WIDTH}px`,
 							translate: `${bounds.x + bounds.width / 2 - HANDLE_WIDTH / 2}px ${bounds.y - HANDLE_WIDTH / 2 + bounds.height}px`,
 						}}
-						onPointerCancel={e => e.stopPropagation()}
+						onPointerDown={e => {
+							e.stopPropagation()
+							onResizeHandlePointerDown(Side.Bottom, bounds)
+						}}
 					/>
 					<rect
 						className='fill-white stroke-1 stroke-blue-500'
@@ -118,7 +136,10 @@ const SelectionBox = memo(({}: Props) => {
 							height: `${HANDLE_WIDTH}px`,
 							translate: `${bounds.x - HANDLE_WIDTH / 2}px ${bounds.y - HANDLE_WIDTH / 2 + bounds.height}px`,
 						}}
-						onPointerCancel={e => e.stopPropagation()}
+						onPointerDown={e => {
+							e.stopPropagation()
+							onResizeHandlePointerDown(Side.Bottom + Side.Left, bounds)
+						}}
 					/>
 					<rect
 						className='fill-white stroke-1 stroke-blue-500'
@@ -130,7 +151,10 @@ const SelectionBox = memo(({}: Props) => {
 							height: `${HANDLE_WIDTH}px`,
 							translate: `${bounds.x - HANDLE_WIDTH / 2}px ${bounds.y - HANDLE_WIDTH / 2 + bounds.height / 2}px`,
 						}}
-						onPointerCancel={e => e.stopPropagation()}
+						onPointerDown={e => {
+							e.stopPropagation()
+							onResizeHandlePointerDown(Side.Left, bounds)
+						}}
 					/>
 				</>
 			)}
