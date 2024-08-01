@@ -8,7 +8,7 @@ import { connectionIdToColor } from '@/lib/utils'
 const Participants = () => {
 	const users = useOthers()
 	const currentUser = useSelf()
-
+	// TODO: add tooltip
 	return (
 		<div className='absolute top-4 right-4 rounded-lg border p-4 bg-secondary text-secondary-foreground border-border shadow-sm max-w-xs h-12 flex items-center'>
 			<div className='flex items-center -space-x-2'>

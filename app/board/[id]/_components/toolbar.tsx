@@ -25,7 +25,11 @@ const Toolbar = ({ canvasState, setCanvasState }: Props) => {
 					icon={MousePointer2}
 					label='Select'
 					onClick={() => setCanvasState({ mode: CanvasMode.NONE })}
-					isActive={canvasState.mode === CanvasMode.NONE}
+					isActive={[
+						CanvasMode.NONE,
+						CanvasMode.RESIZING,
+						CanvasMode.TRANSLATING,
+					].includes(canvasState.mode)}
 				/>
 				<ToolButton
 					icon={Type}
