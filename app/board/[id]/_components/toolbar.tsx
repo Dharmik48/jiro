@@ -10,46 +10,88 @@ import {
 	Type,
 	Undo,
 } from 'lucide-react'
+import { CanvasMode, CanvasState, LayerType } from '@/types'
 
-const Toolbar = () => {
+interface Props {
+	canvasState: CanvasState
+	setCanvasState: (state: CanvasState) => void
+}
+
+const Toolbar = ({ canvasState, setCanvasState }: Props) => {
 	return (
 		<div className='absolute top-1/2 left-4 -translate-y-1/2 space-y-4'>
 			<div className='rounded-lg border p-2 bg-secondary gap-2 text-secondary-foreground border-border shadow-sm max-w-sm flex flex-col'>
 				<ToolButton
 					icon={MousePointer2}
 					label='Select'
-					onClick={() => {}}
-					isActive={true}
+					onClick={() => setCanvasState({ mode: CanvasMode.NONE })}
+					isActive={canvasState.mode === CanvasMode.NONE}
 				/>
 				<ToolButton
 					icon={Type}
 					label='Type'
-					onClick={() => {}}
-					isActive={false}
+					onClick={() =>
+						setCanvasState({
+							mode: CanvasMode.INSERTING,
+							layerType: LayerType.TEXT,
+						})
+					}
+					isActive={
+						canvasState.mode === CanvasMode.INSERTING &&
+						canvasState.layerType === LayerType.TEXT
+					}
 				/>
 				<ToolButton
 					icon={StickyNote}
 					label='Sticky Note'
-					onClick={() => {}}
-					isActive={false}
+					onClick={() =>
+						setCanvasState({
+							mode: CanvasMode.INSERTING,
+							layerType: LayerType.NOTE,
+						})
+					}
+					isActive={
+						canvasState.mode === CanvasMode.INSERTING &&
+						canvasState.layerType === LayerType.NOTE
+					}
 				/>
 				<ToolButton
 					icon={Square}
-					label='Square'
-					onClick={() => {}}
-					isActive={false}
+					label='Rectangle'
+					onClick={() =>
+						setCanvasState({
+							mode: CanvasMode.INSERTING,
+							layerType: LayerType.RECTANGLE,
+						})
+					}
+					isActive={
+						canvasState.mode === CanvasMode.INSERTING &&
+						canvasState.layerType === LayerType.RECTANGLE
+					}
 				/>
 				<ToolButton
 					icon={Circle}
 					label='Circle'
-					onClick={() => {}}
-					isActive={false}
+					onClick={() =>
+						setCanvasState({
+							mode: CanvasMode.INSERTING,
+							layerType: LayerType.ELLIPSIS,
+						})
+					}
+					isActive={
+						canvasState.mode === CanvasMode.INSERTING &&
+						canvasState.layerType === LayerType.ELLIPSIS
+					}
 				/>
 				<ToolButton
 					icon={Pencil}
 					label='Pencil'
-					onClick={() => {}}
-					isActive={false}
+					onClick={() =>
+						setCanvasState({
+							mode: CanvasMode.PENCIL,
+						})
+					}
+					isActive={canvasState.mode === CanvasMode.PENCIL}
 				/>
 			</div>
 			<div className='rounded-lg border p-2 bg-secondary text-secondary-foreground border-border shadow-sm max-w-sm flex flex-col gap-2'>

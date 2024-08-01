@@ -27,6 +27,7 @@ const ToolButton = ({
 				)}
 				variant={'ghost'}
 				disabled={!!isDisabled}
+				onClick={onClick}
 			>
 				{<Icon />}
 			</Button>
