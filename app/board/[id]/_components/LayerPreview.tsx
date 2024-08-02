@@ -1,21 +1,23 @@
 'use client'
 
 import { LayerType } from '@/types'
-import { useStorage } from '@liveblocks/react/suspense'
+import { useSelf, useStorage } from '@liveblocks/react/suspense'
 import Rectangle from './Rectangle'
 
 interface Props {
 	id: string
+	onLayerPointerDown: (id: string, e: React.PointerEvent) => void
+	selectionColor: string
 }
 
-const LayerPreview = ({ id }: Props) => {
+const LayerPreview = ({ id, ...props }: Props) => {
 	const layer = useStorage(root => root.layers.get(id))
 
 	if (!layer) return
 
 	switch (layer.layerType) {
 		case LayerType.RECTANGLE:
-			return <Rectangle layer={layer} />
+			return <Rectangle id={id} layer={layer} {...props} />
 		default:
 			break
 	}

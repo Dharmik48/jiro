@@ -4,7 +4,7 @@ import { Id } from '@/convex/_generated/dataModel'
 import Info from './info'
 import Participants from './participants'
 import Toolbar from './toolbar'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import {
 	Camera,
 	CanvasMode,
@@ -17,13 +17,14 @@ import {
 	useCanRedo,
 	useCanUndo,
 	useMutation,
+	useOthersMapped,
 	useRedo,
 	useStorage,
 	useUndo,
 	useUpdateMyPresence,
 } from '@liveblocks/react/suspense'
 import Cursors from './Cursors'
-import { pointerEventToCanvasPoint } from '@/lib/utils'
+import { connectionIdToColor, pointerEventToCanvasPoint } from '@/lib/utils'
 import LayerPreview from './LayerPreview'
 import { nanoid } from 'nanoid'
 import { LiveObject } from '@liveblocks/client'
@@ -71,6 +72,22 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 		[canvasState]
 	)
 
+	const selections = useOthersMapped(other => other.presence.selection)
+
+	const layerSelectionColor = useMemo(() => {
+		const layers: Record<string, string> = {}
+
+		for (const selection of selections) {
+			const [connectionId, layerIds] = selection
+
+			layerIds.forEach(
+				layerId => (layers[layerId] = connectionIdToColor(connectionId))
+			)
+		}
+
+		return layers
+	}, [selections])
+
 	const onPointerUp = (e: React.PointerEvent) => {
 		const point = pointerEventToCanvasPoint(e, camera)
 
@@ -88,6 +105,15 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 		updateMyPresense({ cursor: null })
 	}
 
+	const onLayerPointerDown = useMutation(
+		({ setMyPresence }, id: string, e: React.PointerEvent) => {
+			if (canvasState.mode !== CanvasMode.NONE) return
+			// TODO: select mutiple on ctrl select
+			setMyPresence({ selection: [id] })
+		},
+		[canvasState]
+	)
+
 	const onWheel = useCallback((e: React.WheelEvent) => {
 		setCamera(camera => ({ x: camera.x - e.deltaX, y: camera.y - e.deltaY }))
 	}, [])
@@ -96,7 +122,6 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 		<div className='relative h-full'>
 			<Info id={id} />
 			<Participants />
-			{/* TODO: undo redo */}
 			<Toolbar
 				canvasState={canvasState}
 				setCanvasState={setCanvasState}
@@ -114,7 +139,12 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 			>
 				<g style={{ translate: `${camera.x}px ${camera.y}px` }}>
 					{layerIds.map(id => (
-						<LayerPreview key={id} id={id} />
+						<LayerPreview
+							key={id}
+							id={id}
+							onLayerPointerDown={onLayerPointerDown}
+							selectionColor={layerSelectionColor[id]}
+						/>
 					))}
 					<Cursors />
 				</g>

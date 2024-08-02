@@ -1,7 +1,19 @@
 import { colorTypeToRGB } from '@/lib/utils'
 import { RectangleLayer } from '@/types'
 
-const Rectangle = ({ layer }: { layer: RectangleLayer }) => {
+interface Props {
+	id: string
+	layer: RectangleLayer
+	onLayerPointerDown: (id: string, e: React.PointerEvent) => void
+	selectionColor: string
+}
+
+const Rectangle = ({
+	id,
+	layer,
+	onLayerPointerDown,
+	selectionColor,
+}: Props) => {
 	return (
 		<rect
 			className='drop-shadow-md'
@@ -11,6 +23,9 @@ const Rectangle = ({ layer }: { layer: RectangleLayer }) => {
 			height={layer.height}
 			width={layer.width}
 			fill={colorTypeToRGB(layer.fill)}
+			onPointerDown={e => onLayerPointerDown(id, e)}
+			strokeWidth={2}
+			stroke={selectionColor}
 		/>
 	)
 }
