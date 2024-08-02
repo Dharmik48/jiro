@@ -15,9 +15,20 @@ import { CanvasMode, CanvasState, LayerType } from '@/types'
 interface Props {
 	canvasState: CanvasState
 	setCanvasState: (state: CanvasState) => void
+	undo: () => void
+	redo: () => void
+	canUndo: boolean
+	canRedo: boolean
 }
 
-const Toolbar = ({ canvasState, setCanvasState }: Props) => {
+const Toolbar = ({
+	canvasState,
+	setCanvasState,
+	undo,
+	redo,
+	canRedo,
+	canUndo,
+}: Props) => {
 	return (
 		<div className='absolute top-1/2 left-4 -translate-y-1/2 space-y-4'>
 			<div className='rounded-lg border p-2 bg-secondary gap-2 text-secondary-foreground border-border shadow-sm max-w-sm flex flex-col'>
@@ -102,14 +113,14 @@ const Toolbar = ({ canvasState, setCanvasState }: Props) => {
 				<ToolButton
 					icon={Undo}
 					label='Undo'
-					onClick={() => {}}
-					isDisabled={true}
+					onClick={undo}
+					isDisabled={!canUndo}
 				/>
 				<ToolButton
 					icon={Redo}
 					label='Redo'
-					onClick={() => {}}
-					isDisabled={true}
+					onClick={redo}
+					isDisabled={!canRedo}
 				/>
 			</div>
 		</div>

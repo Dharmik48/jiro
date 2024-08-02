@@ -14,8 +14,12 @@ import {
 	Point,
 } from '@/types'
 import {
+	useCanRedo,
+	useCanUndo,
 	useMutation,
+	useRedo,
 	useStorage,
+	useUndo,
 	useUpdateMyPresence,
 } from '@liveblocks/react/suspense'
 import Cursors from './Cursors'
@@ -31,6 +35,10 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 	const [camera, setCamera] = useState<Camera>({ x: 0, y: 0 })
 	const layerIds = useStorage(root => root.layerIds)
 	const updateMyPresense = useUpdateMyPresence()
+	const undo = useUndo()
+	const redo = useRedo()
+	const canUndo = useCanUndo()
+	const canRedo = useCanRedo()
 
 	const insertLayer = useMutation(
 		(
@@ -89,7 +97,14 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 			<Info id={id} />
 			<Participants />
 			{/* TODO: undo redo */}
-			<Toolbar canvasState={canvasState} setCanvasState={setCanvasState} />
+			<Toolbar
+				canvasState={canvasState}
+				setCanvasState={setCanvasState}
+				undo={undo}
+				redo={redo}
+				canUndo={canUndo}
+				canRedo={canRedo}
+			/>
 			<svg
 				className='h-screen w-screen'
 				onPointerUp={onPointerUp}
