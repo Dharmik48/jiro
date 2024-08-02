@@ -9,6 +9,11 @@ export type Camera = {
 	y: number
 }
 
+export type Point = {
+	x: number
+	y: number
+}
+
 export enum CanvasMode {
 	NONE,
 	INSERTING,
@@ -48,6 +53,7 @@ export type RectangleLayer = {
 	width: number
 	height: number
 	fill: Color
+	value?: string
 }
 
 export type TextLayer = {
@@ -57,7 +63,7 @@ export type TextLayer = {
 	width: number
 	height: number
 	fill: Color
-	value: string
+	value?: string
 }
 
 export type EllipsisLayer = {
@@ -67,6 +73,7 @@ export type EllipsisLayer = {
 	width: number
 	height: number
 	fill: Color
+	value?: string
 }
 
 export type NoteLayer = {
@@ -76,7 +83,7 @@ export type NoteLayer = {
 	width: number
 	height: number
 	fill: Color
-	value: string
+	value?: string
 }
 
 export type PathLayer = {
@@ -87,4 +94,12 @@ export type PathLayer = {
 	height: number
 	fill: Color
 	points: number[][]
+	value?: string
 }
+
+export type Layer =
+	| RectangleLayer
+	| PathLayer
+	| NoteLayer
+	| EllipsisLayer
+	| TextLayer
