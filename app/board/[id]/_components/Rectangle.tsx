@@ -4,6 +4,7 @@ import { RectangleLayer } from '@/types'
 const Rectangle = ({ layer }: { layer: RectangleLayer }) => {
 	return (
 		<rect
+			className='drop-shadow-md'
 			style={{ translate: `${layer.x}px ${layer.y}px` }}
 			x={0}
 			y={0}
