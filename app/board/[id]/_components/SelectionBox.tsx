@@ -1,12 +1,17 @@
 'use client'
 
 import { useSelectionBounds } from '@/hooks/use-selection-bounds'
+import { Side, XYWH } from '@/types'
 import { useSelf } from '@liveblocks/react/suspense'
 import { memo } from 'react'
 
 const STROKE_WIDTH = 8
 
-const SelectionBox = memo(() => {
+interface Props {
+	onResizePointerDown: (initialBounds: XYWH, corner: Side[]) => void
+}
+
+const SelectionBox = memo(({ onResizePointerDown }: Props) => {
 	const isOnlyOneLayerSelected = useSelf(
 		me => me.presence.selection.length === 1
 	)
@@ -35,6 +40,9 @@ const SelectionBox = memo(() => {
 						fill={'#fff'}
 						x={bounds.x - STROKE_WIDTH / 2}
 						y={bounds.y - STROKE_WIDTH / 2}
+						onPointerDown={() =>
+							onResizePointerDown(bounds, [Side.Left, Side.Top])
+						}
 					/>
 					{/* TOP */}
 					<rect
@@ -44,6 +52,7 @@ const SelectionBox = memo(() => {
 						fill={'#fff'}
 						x={bounds.x + bounds.width / 2 - STROKE_WIDTH / 2}
 						y={bounds.y - STROKE_WIDTH / 2}
+						onPointerDown={() => onResizePointerDown(bounds, [Side.Top])}
 					/>
 					{/* TOP RIGHT */}
 					<rect
@@ -53,6 +62,9 @@ const SelectionBox = memo(() => {
 						fill={'#fff'}
 						x={bounds.x + bounds.width - STROKE_WIDTH / 2}
 						y={bounds.y - STROKE_WIDTH / 2}
+						onPointerDown={() =>
+							onResizePointerDown(bounds, [Side.Top, Side.Right])
+						}
 					/>
 					{/* RIGHT */}
 					<rect
@@ -62,6 +74,7 @@ const SelectionBox = memo(() => {
 						fill={'#fff'}
 						x={bounds.x + bounds.width - STROKE_WIDTH / 2}
 						y={bounds.y + bounds.height / 2 - STROKE_WIDTH / 2}
+						onPointerDown={() => onResizePointerDown(bounds, [Side.Right])}
 					/>
 					{/* BOTTOM RIGHT */}
 					<rect
@@ -71,6 +84,9 @@ const SelectionBox = memo(() => {
 						fill={'#fff'}
 						x={bounds.x + bounds.width - STROKE_WIDTH / 2}
 						y={bounds.y + bounds.height - STROKE_WIDTH / 2}
+						onPointerDown={() =>
+							onResizePointerDown(bounds, [Side.Bottom, Side.Right])
+						}
 					/>
 					{/* BOTTOM */}
 					<rect
@@ -80,6 +96,7 @@ const SelectionBox = memo(() => {
 						fill={'#fff'}
 						x={bounds.x + bounds.width / 2 - STROKE_WIDTH / 2}
 						y={bounds.y + bounds.height - STROKE_WIDTH / 2}
+						onPointerDown={() => onResizePointerDown(bounds, [Side.Bottom])}
 					/>
 					{/* BOTTOM LEFT */}
 					<rect
@@ -89,6 +106,9 @@ const SelectionBox = memo(() => {
 						fill={'#fff'}
 						x={bounds.x - STROKE_WIDTH / 2}
 						y={bounds.y + bounds.height - STROKE_WIDTH / 2}
+						onPointerDown={() =>
+							onResizePointerDown(bounds, [Side.Bottom, Side.Left])
+						}
 					/>
 					{/* LEFT */}
 					<rect
@@ -98,6 +118,7 @@ const SelectionBox = memo(() => {
 						fill={'#fff'}
 						x={bounds.x - STROKE_WIDTH / 2}
 						y={bounds.y + bounds.height / 2 - STROKE_WIDTH / 2}
+						onPointerDown={() => onResizePointerDown(bounds, [Side.Left])}
 					/>
 				</>
 			)}

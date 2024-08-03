@@ -30,6 +30,13 @@ export enum LayerType {
 	ELLIPSIS,
 }
 
+export enum Side {
+	Top,
+	Bottom,
+	Left,
+	Right,
+}
+
 export type XYWH = {
 	x: number
 	y: number
@@ -53,6 +60,7 @@ export type CanvasState =
 			mode: CanvasMode.PENCIL
 	  }
 	| { mode: CanvasMode.TRANSLATING }
+	| { mode: CanvasMode.RESIZING; initialBounds: XYWH; corner: Side[] }
 
 export type RectangleLayer = {
 	layerType: LayerType.RECTANGLE
