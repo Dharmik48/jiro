@@ -30,6 +30,13 @@ export enum LayerType {
 	ELLIPSIS,
 }
 
+export type XYWH = {
+	x: number
+	y: number
+	width: number
+	height: number
+}
+
 export type CanvasState =
 	| {
 			mode: CanvasMode.NONE

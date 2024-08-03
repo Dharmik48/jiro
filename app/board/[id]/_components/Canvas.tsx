@@ -28,6 +28,7 @@ import { connectionIdToColor, pointerEventToCanvasPoint } from '@/lib/utils'
 import LayerPreview from './LayerPreview'
 import { nanoid } from 'nanoid'
 import { LiveObject } from '@liveblocks/client'
+import SelectionBox from './SelectionBox'
 
 const Canvas = ({ id }: { id: Id<'boards'> }) => {
 	const [canvasState, setCanvasState] = useState<CanvasState>({
@@ -146,6 +147,7 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 							selectionColor={layerSelectionColor[id]}
 						/>
 					))}
+					<SelectionBox />
 					<Cursors />
 				</g>
 			</svg>
