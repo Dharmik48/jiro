@@ -106,6 +106,35 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 		[canvasState, camera]
 	)
 
+	const translateLayers = useMutation(
+		({ storage, self }, point: Point) => {
+			if (canvasState.mode !== CanvasMode.TRANSLATING) return
+
+			const selectedLayerIds = self.presence.selection
+			if (!selectedLayerIds.length) return
+
+			const offset = {
+				x: point.x - canvasState.current.x,
+				y: point.y - canvasState.current.y,
+			}
+
+			const layers = storage.get('layers')
+
+			for (const layerId of selectedLayerIds) {
+				const layer = layers.get(layerId)
+
+				if (!layer) continue
+
+				layer.update({
+					x: layer.get('x') + offset.x,
+					y: layer.get('y') + offset.y,
+				})
+			}
+			setCanvasState({ mode: CanvasMode.TRANSLATING, current: point })
+		},
+		[canvasState]
+	)
+
 	const selections = useOthersMapped(other => other.presence.selection)
 
 	const layerSelectionColor = useMemo(() => {
@@ -137,7 +166,8 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 		({ setMyPresence }, e: React.PointerEvent) => {
 			const cursor = pointerEventToCanvasPoint(e, camera)
 
-			if (canvasState.mode === CanvasMode.RESIZING) resizeLayer(e)
+			if (canvasState.mode === CanvasMode.TRANSLATING) translateLayers(cursor)
+			else if (canvasState.mode === CanvasMode.RESIZING) resizeLayer(e)
 			setMyPresence({ cursor })
 		},
 		[camera, canvasState]
@@ -158,13 +188,13 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 				return
 
 			history.pause()
-
+			const pointer = pointerEventToCanvasPoint(e, camera)
 			// TODO: select mutiple on ctrl select
 			setMyPresence({ selection: [id] }, { addToHistory: true })
 
-			setCanvasState({ mode: CanvasMode.TRANSLATING })
+			setCanvasState({ mode: CanvasMode.TRANSLATING, current: pointer })
 		},
-		[canvasState]
+		[canvasState, camera, history]
 	)
 
 	const onResizePointerDown = useCallback(
