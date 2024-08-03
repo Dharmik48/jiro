@@ -100,8 +100,9 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 		const point = pointerEventToCanvasPoint(e, camera)
 
 		if (canvasState.mode === CanvasMode.NONE) deselectLayers()
-		if (canvasState.mode === CanvasMode.INSERTING)
+		else if (canvasState.mode === CanvasMode.INSERTING)
 			insertLayer(canvasState.layerType, point)
+		else setCanvasState({ mode: CanvasMode.NONE })
 	}
 
 	const onPointerMove = (e: React.PointerEvent) => {
