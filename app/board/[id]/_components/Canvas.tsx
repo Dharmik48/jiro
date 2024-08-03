@@ -9,6 +9,7 @@ import {
 	Camera,
 	CanvasMode,
 	CanvasState,
+	Color,
 	Layer,
 	LayerType,
 	Point,
@@ -35,11 +36,13 @@ import LayerPreview from './LayerPreview'
 import { nanoid } from 'nanoid'
 import { LiveObject } from '@liveblocks/client'
 import SelectionBox from './SelectionBox'
+import SelectionTools from './SelectionTools'
 
 const Canvas = ({ id }: { id: Id<'boards'> }) => {
 	const [canvasState, setCanvasState] = useState<CanvasState>({
 		mode: CanvasMode.NONE,
 	})
+	// TODO: add last used color
 	const [camera, setCamera] = useState<Camera>({ x: 0, y: 0 })
 	const layerIds = useStorage(root => root.layerIds)
 	const undo = useUndo()
@@ -209,6 +212,17 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 		setCamera(camera => ({ x: camera.x - e.deltaX, y: camera.y - e.deltaY }))
 	}, [])
 
+	const setFill = useMutation(({ self, storage }, color: Color) => {
+		const selectedLayerIds = self.presence.selection
+		const layers = storage.get('layers')
+
+		if (!layers) return
+
+		for (const layerId of selectedLayerIds) {
+			const layer = layers.get(layerId)?.set('fill', color)
+		}
+	}, [])
+
 	return (
 		<div className='relative h-full'>
 			<Info id={id} />
@@ -221,6 +235,7 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 				canUndo={canUndo}
 				canRedo={canRedo}
 			/>
+			<SelectionTools camera={camera} onChange={setFill} />
 			<svg
 				className='h-screen w-screen'
 				onPointerUp={onPointerUp}
