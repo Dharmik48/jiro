@@ -73,6 +73,13 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 		[canvasState]
 	)
 
+	const deselectLayers = useMutation(
+		({ setMyPresence }) => {
+			setMyPresence({ selection: [] }, { addToHistory: true })
+		},
+		[canvasState]
+	)
+
 	const selections = useOthersMapped(other => other.presence.selection)
 
 	const layerSelectionColor = useMemo(() => {
@@ -92,6 +99,7 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 	const onPointerUp = (e: React.PointerEvent) => {
 		const point = pointerEventToCanvasPoint(e, camera)
 
+		if (canvasState.mode === CanvasMode.NONE) deselectLayers()
 		if (canvasState.mode === CanvasMode.INSERTING)
 			insertLayer(canvasState.layerType, point)
 	}
@@ -108,9 +116,13 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 
 	const onLayerPointerDown = useMutation(
 		({ setMyPresence }, id: string, e: React.PointerEvent) => {
-			if (canvasState.mode !== CanvasMode.NONE) return
+			if ([CanvasMode.INSERTING, CanvasMode.PENCIL].includes(canvasState.mode))
+				return
+
 			// TODO: select mutiple on ctrl select
-			setMyPresence({ selection: [id] })
+			setMyPresence({ selection: [id] }, { addToHistory: true })
+
+			setCanvasState({ mode: CanvasMode.TRANSLATING })
 		},
 		[canvasState]
 	)

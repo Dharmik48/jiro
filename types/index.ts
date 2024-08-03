@@ -52,6 +52,7 @@ export type CanvasState =
 	| {
 			mode: CanvasMode.PENCIL
 	  }
+	| { mode: CanvasMode.TRANSLATING }
 
 export type RectangleLayer = {
 	layerType: LayerType.RECTANGLE
