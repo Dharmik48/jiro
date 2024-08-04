@@ -218,9 +218,22 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 
 		if (!layers) return
 
+		for (const layerId of selectedLayerIds)
+			layers.get(layerId)?.set('fill', color)
+	}, [])
+
+	const deleteLayers = useMutation(({ self, storage, setMyPresence }) => {
+		const selectedLayerIds = self.presence.selection
+		const layers = storage.get('layers')
+		const layerIds = storage.get('layerIds')
+
+		if (!layers) return
+
 		for (const layerId of selectedLayerIds) {
-			const layer = layers.get(layerId)?.set('fill', color)
+			layers.delete(layerId)
+			layerIds.delete(layerIds.indexOf(layerId))
 		}
+		setMyPresence({ selection: [] })
 	}, [])
 
 	return (
@@ -235,7 +248,11 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 				canUndo={canUndo}
 				canRedo={canRedo}
 			/>
-			<SelectionTools camera={camera} onChange={setFill} />
+			<SelectionTools
+				camera={camera}
+				onChange={setFill}
+				onDelete={deleteLayers}
+			/>
 			<svg
 				className='h-screen w-screen'
 				onPointerUp={onPointerUp}

@@ -3,15 +3,15 @@
 import { useSelectionBounds } from '@/hooks/use-selection-bounds'
 import { Camera, Color } from '@/types'
 import ColorPicker from './ColorPicker'
-import { Separator } from '@/components/ui/separator'
-import { useMutation } from '@liveblocks/react'
+import DeleteLayer from './DeleteLayer'
 
 interface Props {
 	camera: Camera
 	onChange: (color: Color) => void
+	onDelete: () => void
 }
 
-const SelectionTools = ({ camera, onChange }: Props) => {
+const SelectionTools = ({ camera, onChange, onDelete }: Props) => {
 	const bounds = useSelectionBounds()
 
 	if (!bounds) return
@@ -21,10 +21,11 @@ const SelectionTools = ({ camera, onChange }: Props) => {
 
 	return (
 		<div
-			className='bg-secondary shadow-md absolute p-4 rounded-md flex items-center justify-center'
+			className='bg-secondary shadow-lg absolute p-4 rounded-md flex items-center justify-center'
 			style={{ translate: `calc(${x}px - 50%) calc(${y - 16}px - 100%)` }}
 		>
 			<ColorPicker onChange={onChange} />
+			<DeleteLayer onClick={onDelete} />
 		</div>
 	)
 }
