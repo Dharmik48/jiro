@@ -149,7 +149,7 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 	const selectLayers = useMutation(
 		({ setMyPresence, storage }, point: Point) => {
 			if (canvasState.mode !== CanvasMode.PRESSING) return
-
+			// TODO: SELECT ON DRAG ITSELF
 			const bounds = getSelectionNetBounds(
 				canvasState.initialPoint,
 				canvasState.current
