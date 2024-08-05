@@ -20,6 +20,7 @@ export enum CanvasMode {
 	RESIZING,
 	TRANSLATING,
 	PENCIL,
+	PRESSING,
 }
 
 export enum LayerType {
@@ -61,6 +62,7 @@ export type CanvasState =
 	  }
 	| { mode: CanvasMode.TRANSLATING; current: Point }
 	| { mode: CanvasMode.RESIZING; initialBounds: XYWH; corner: Side[] }
+	| { mode: CanvasMode.PRESSING; initialPoint: Point; current: Point }
 
 export type RectangleLayer = {
 	layerType: LayerType.RECTANGLE

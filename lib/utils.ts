@@ -60,3 +60,12 @@ export function getResizedBounds(
 
 	return bounds
 }
+
+export function getSelectionNetBounds(initial: Point, current: Point): XYWH {
+	const x = initial.x < current.x ? initial.x : current.x
+	const y = initial.y < current.y ? initial.y : current.y
+	const width = Math.abs(current.x - initial.x)
+	const height = Math.abs(current.y - initial.y)
+
+	return { x, y, width, height }
+}

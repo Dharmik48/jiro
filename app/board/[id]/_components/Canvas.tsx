@@ -30,6 +30,7 @@ import Cursors from './Cursors'
 import {
 	connectionIdToColor,
 	getResizedBounds,
+	getSelectionNetBounds,
 	pointerEventToCanvasPoint,
 } from '@/lib/utils'
 import LayerPreview from './LayerPreview'
@@ -37,6 +38,7 @@ import { nanoid } from 'nanoid'
 import { LiveObject } from '@liveblocks/client'
 import SelectionBox from './SelectionBox'
 import SelectionTools from './SelectionTools'
+import SelectionNet from './SelectionNet'
 
 const Canvas = ({ id }: { id: Id<'boards'> }) => {
 	const [canvasState, setCanvasState] = useState<CanvasState>({
@@ -138,6 +140,48 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 		[canvasState]
 	)
 
+	const drawSelectionNet = (point: Point) => {
+		if (canvasState.mode !== CanvasMode.PRESSING) return
+
+		setCanvasState(() => ({ ...canvasState, current: point }))
+	}
+
+	const selectLayers = useMutation(
+		({ setMyPresence, storage }, point: Point) => {
+			if (canvasState.mode !== CanvasMode.PRESSING) return
+
+			const bounds = getSelectionNetBounds(
+				canvasState.initialPoint,
+				canvasState.current
+			)
+
+			const liveLayers = storage.get('layers')
+			const layerIds = storage.get('layerIds')
+
+			const selected = layerIds.filter(layerId => {
+				const layer = liveLayers.get(layerId)
+				if (!layer) return false
+
+				const x = layer.get('x')
+				const y = layer.get('y')
+				const width = layer.get('width')
+				const height = layer.get('height')
+
+				if (!(x > bounds.x && x + width < bounds.x + bounds.width)) return false
+				if (!(y > bounds.y && y + height < bounds.y + bounds.height))
+					return false
+
+				return true
+			})
+
+			if (!selected.length) return setCanvasState({ mode: CanvasMode.NONE })
+
+			setMyPresence({ selection: selected })
+			setCanvasState({ mode: CanvasMode.NONE })
+		},
+		[canvasState]
+	)
+
 	const selections = useOthersMapped(other => other.presence.selection)
 
 	const layerSelectionColor = useMemo(() => {
@@ -160,6 +204,7 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 		if (canvasState.mode === CanvasMode.NONE) deselectLayers()
 		else if (canvasState.mode === CanvasMode.INSERTING)
 			insertLayer(canvasState.layerType, point)
+		else if (canvasState.mode === CanvasMode.PRESSING) selectLayers(point)
 		else setCanvasState({ mode: CanvasMode.NONE })
 
 		history.resume()
@@ -171,6 +216,8 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 
 			if (canvasState.mode === CanvasMode.TRANSLATING) translateLayers(cursor)
 			else if (canvasState.mode === CanvasMode.RESIZING) resizeLayer(e)
+			else if (canvasState.mode === CanvasMode.PRESSING)
+				drawSelectionNet(cursor)
 			setMyPresence({ cursor })
 		},
 		[camera, canvasState]
@@ -185,15 +232,32 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 		[camera]
 	)
 
+	const onPointerDown = (e: React.PointerEvent) => {
+		if (canvasState.mode !== CanvasMode.NONE) return
+
+		e.stopPropagation()
+		const point = pointerEventToCanvasPoint(e, camera)
+
+		deselectLayers()
+		setCanvasState({
+			mode: CanvasMode.PRESSING,
+			initialPoint: point,
+			current: point,
+		})
+	}
+
 	const onLayerPointerDown = useMutation(
-		({ setMyPresence }, id: string, e: React.PointerEvent) => {
+		({ setMyPresence, self }, id: string, e: React.PointerEvent) => {
+			e.stopPropagation()
 			if ([CanvasMode.INSERTING, CanvasMode.PENCIL].includes(canvasState.mode))
 				return
 
 			history.pause()
 			const pointer = pointerEventToCanvasPoint(e, camera)
 			// TODO: select mutiple on ctrl select
-			setMyPresence({ selection: [id] }, { addToHistory: true })
+
+			if (!self.presence.selection.includes(id))
+				setMyPresence({ selection: [id] }, { addToHistory: true })
 
 			setCanvasState({ mode: CanvasMode.TRANSLATING, current: pointer })
 		},
@@ -258,6 +322,7 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 				onPointerUp={onPointerUp}
 				onPointerMove={onPointerMove}
 				onPointerLeave={onPointerLeave}
+				onPointerDown={onPointerDown}
 				onWheel={onWheel}
 			>
 				<g style={{ translate: `${camera.x}px ${camera.y}px` }}>
@@ -271,6 +336,12 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 					))}
 					<SelectionBox onResizePointerDown={onResizePointerDown} />
 					<Cursors />
+					{canvasState.mode === CanvasMode.PRESSING && (
+						<SelectionNet
+							initial={canvasState.initialPoint}
+							current={canvasState.current}
+						/>
+					)}
 				</g>
 			</svg>
 		</div>

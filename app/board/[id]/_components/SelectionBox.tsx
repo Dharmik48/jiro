@@ -20,6 +20,11 @@ const SelectionBox = memo(({ onResizePointerDown }: Props) => {
 
 	if (!bounds) return null
 
+	const handleResize = (e: React.PointerEvent, bounds: XYWH, side: Side[]) => {
+		e.stopPropagation()
+		onResizePointerDown(bounds, side)
+	}
+
 	return (
 		<>
 			<rect
@@ -40,9 +45,7 @@ const SelectionBox = memo(({ onResizePointerDown }: Props) => {
 						fill={'#fff'}
 						x={bounds.x - STROKE_WIDTH / 2}
 						y={bounds.y - STROKE_WIDTH / 2}
-						onPointerDown={() =>
-							onResizePointerDown(bounds, [Side.Left, Side.Top])
-						}
+						onPointerDown={e => handleResize(e, bounds, [Side.Left, Side.Top])}
 					/>
 					{/* TOP */}
 					<rect
@@ -52,7 +55,7 @@ const SelectionBox = memo(({ onResizePointerDown }: Props) => {
 						fill={'#fff'}
 						x={bounds.x + bounds.width / 2 - STROKE_WIDTH / 2}
 						y={bounds.y - STROKE_WIDTH / 2}
-						onPointerDown={() => onResizePointerDown(bounds, [Side.Top])}
+						onPointerDown={e => handleResize(e, bounds, [Side.Top])}
 					/>
 					{/* TOP RIGHT */}
 					<rect
@@ -62,9 +65,7 @@ const SelectionBox = memo(({ onResizePointerDown }: Props) => {
 						fill={'#fff'}
 						x={bounds.x + bounds.width - STROKE_WIDTH / 2}
 						y={bounds.y - STROKE_WIDTH / 2}
-						onPointerDown={() =>
-							onResizePointerDown(bounds, [Side.Top, Side.Right])
-						}
+						onPointerDown={e => handleResize(e, bounds, [Side.Top, Side.Right])}
 					/>
 					{/* RIGHT */}
 					<rect
@@ -74,7 +75,7 @@ const SelectionBox = memo(({ onResizePointerDown }: Props) => {
 						fill={'#fff'}
 						x={bounds.x + bounds.width - STROKE_WIDTH / 2}
 						y={bounds.y + bounds.height / 2 - STROKE_WIDTH / 2}
-						onPointerDown={() => onResizePointerDown(bounds, [Side.Right])}
+						onPointerDown={e => handleResize(e, bounds, [Side.Right])}
 					/>
 					{/* BOTTOM RIGHT */}
 					<rect
@@ -84,8 +85,8 @@ const SelectionBox = memo(({ onResizePointerDown }: Props) => {
 						fill={'#fff'}
 						x={bounds.x + bounds.width - STROKE_WIDTH / 2}
 						y={bounds.y + bounds.height - STROKE_WIDTH / 2}
-						onPointerDown={() =>
-							onResizePointerDown(bounds, [Side.Bottom, Side.Right])
+						onPointerDown={e =>
+							handleResize(e, bounds, [Side.Bottom, Side.Right])
 						}
 					/>
 					{/* BOTTOM */}
@@ -96,7 +97,7 @@ const SelectionBox = memo(({ onResizePointerDown }: Props) => {
 						fill={'#fff'}
 						x={bounds.x + bounds.width / 2 - STROKE_WIDTH / 2}
 						y={bounds.y + bounds.height - STROKE_WIDTH / 2}
-						onPointerDown={() => onResizePointerDown(bounds, [Side.Bottom])}
+						onPointerDown={e => handleResize(e, bounds, [Side.Bottom])}
 					/>
 					{/* BOTTOM LEFT */}
 					<rect
@@ -106,8 +107,8 @@ const SelectionBox = memo(({ onResizePointerDown }: Props) => {
 						fill={'#fff'}
 						x={bounds.x - STROKE_WIDTH / 2}
 						y={bounds.y + bounds.height - STROKE_WIDTH / 2}
-						onPointerDown={() =>
-							onResizePointerDown(bounds, [Side.Bottom, Side.Left])
+						onPointerDown={e =>
+							handleResize(e, bounds, [Side.Bottom, Side.Left])
 						}
 					/>
 					{/* LEFT */}
@@ -118,7 +119,7 @@ const SelectionBox = memo(({ onResizePointerDown }: Props) => {
 						fill={'#fff'}
 						x={bounds.x - STROKE_WIDTH / 2}
 						y={bounds.y + bounds.height / 2 - STROKE_WIDTH / 2}
-						onPointerDown={() => onResizePointerDown(bounds, [Side.Left])}
+						onPointerDown={e => handleResize(e, bounds, [Side.Left])}
 					/>
 				</>
 			)}

@@ -40,6 +40,7 @@ const Toolbar = ({
 						CanvasMode.NONE,
 						CanvasMode.RESIZING,
 						CanvasMode.TRANSLATING,
+						CanvasMode.PRESSING,
 					].includes(canvasState.mode)}
 				/>
 				<ToolButton
