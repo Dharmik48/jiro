@@ -51,7 +51,9 @@ const TextLayer = ({
 			width={layer.width}
 			height={layer.height}
 			onPointerDown={e => onLayerPointerDown(id, e)}
-			style={{ outline: `1px solid ${selectionColor}` }}
+			style={{
+				outline: selectionColor ? `1px solid ${selectionColor}` : 'none',
+			}}
 		>
 			<ContentEditable
 				className={cn(

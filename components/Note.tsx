@@ -51,7 +51,7 @@ const NoteLayer = ({
 			height={layer.height}
 			onPointerDown={e => onLayerPointerDown(id, e)}
 			style={{
-				outline: `1px solid ${selectionColor}`,
+				outline: selectionColor ? `1px solid ${selectionColor}` : 'none',
 			}}
 			className='drop-shadow-xl shadow-md'
 		>
