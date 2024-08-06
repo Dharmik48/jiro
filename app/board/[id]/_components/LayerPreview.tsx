@@ -4,6 +4,7 @@ import { LayerType } from '@/types'
 import { useSelf, useStorage } from '@liveblocks/react/suspense'
 import Rectangle from './Rectangle'
 import Ellipse from '@/components/Ellipse'
+import TextLayer from '@/components/TextLayer'
 
 interface Props {
 	id: string
@@ -21,6 +22,8 @@ const LayerPreview = ({ id, ...props }: Props) => {
 			return <Rectangle id={id} layer={layer} {...props} />
 		case LayerType.ELLIPSIS:
 			return <Ellipse id={id} layer={layer} {...props} />
+		case LayerType.TEXT:
+			return <TextLayer id={id} layer={layer} {...props} />
 		default:
 			break
 	}
