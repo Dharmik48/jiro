@@ -69,3 +69,9 @@ export function getSelectionNetBounds(initial: Point, current: Point): XYWH {
 
 	return { x, y, width, height }
 }
+
+export function getContrastTextColor(color: Color) {
+	const l = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b
+
+	return l > 182 ? 'black' : 'white'
+}
