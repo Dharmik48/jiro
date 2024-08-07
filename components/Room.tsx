@@ -20,7 +20,12 @@ export function Room({ children, roomId, fallback }: Props) {
 		<LiveblocksProvider authEndpoint={'/api/liveblocks-auth'} throttle={16}>
 			<RoomProvider
 				id={roomId}
-				initialPresence={{ cursor: null, selection: [] }}
+				initialPresence={{
+					cursor: null,
+					selection: [],
+					pencilDraft: null,
+					color: null,
+				}}
 				initialStorage={{
 					layerIds: new LiveList<string>([]),
 					layers: new LiveMap<string, LiveObject<Layer>>(),

@@ -63,6 +63,7 @@ export type CanvasState =
 	| { mode: CanvasMode.TRANSLATING; current: Point }
 	| { mode: CanvasMode.RESIZING; initialBounds: XYWH; corner: Side[] }
 	| { mode: CanvasMode.PRESSING; initialPoint: Point; current: Point }
+	| { mode: CanvasMode.PENCIL }
 
 export type RectangleLayer = {
 	layerType: LayerType.RECTANGLE

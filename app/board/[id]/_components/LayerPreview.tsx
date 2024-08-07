@@ -6,6 +6,8 @@ import Rectangle from './Rectangle'
 import Ellipse from '@/components/Ellipse'
 import TextLayer from '@/components/TextLayer'
 import NoteLayer from '@/components/Note'
+import Path from '@/components/Path'
+import { colorTypeToRGB } from '@/lib/utils'
 
 interface Props {
 	id: string
@@ -27,6 +29,18 @@ const LayerPreview = ({ id, ...props }: Props) => {
 			return <TextLayer id={id} layer={layer} {...props} />
 		case LayerType.NOTE:
 			return <NoteLayer id={id} layer={layer} {...props} />
+		case LayerType.PATH:
+			return (
+				<Path
+					x={layer.x}
+					y={layer.y}
+					fill={colorTypeToRGB(layer.fill)}
+					key={id}
+					points={layer.points}
+					onPointerDown={e => props.onLayerPointerDown(id, e)}
+					stroke={props.selectionColor}
+				/>
+			)
 		default:
 			break
 	}

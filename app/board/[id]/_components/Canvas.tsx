@@ -23,14 +23,17 @@ import {
 	useMutation,
 	useOthersMapped,
 	useRedo,
+	useSelf,
 	useStorage,
 	useUndo,
 } from '@liveblocks/react/suspense'
 import Cursors from './Cursors'
 import {
+	colorTypeToRGB,
 	connectionIdToColor,
 	getResizedBounds,
 	getSelectionNetBounds,
+	penPointsToPathLayer,
 	pointerEventToCanvasPoint,
 } from '@/lib/utils'
 import LayerPreview from './LayerPreview'
@@ -39,11 +42,13 @@ import { LiveObject } from '@liveblocks/client'
 import SelectionBox from './SelectionBox'
 import SelectionTools from './SelectionTools'
 import SelectionNet from './SelectionNet'
+import Path from '@/components/Path'
 
 const Canvas = ({ id }: { id: Id<'boards'> }) => {
 	const [canvasState, setCanvasState] = useState<CanvasState>({
 		mode: CanvasMode.NONE,
 	})
+	const pencilDraft = useSelf(me => me.presence.pencilDraft)
 	// TODO: add last used color
 	const [camera, setCamera] = useState<Camera>({ x: 0, y: 0 })
 	const layerIds = useStorage(root => root.layerIds)
@@ -182,6 +187,60 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 		[canvasState]
 	)
 
+	const startDrawing = useMutation(
+		({ setMyPresence }, point: Point, pressure: number) => {
+			setMyPresence({
+				pencilDraft: [[point.x, point.y, pressure]],
+				color: { r: 255, g: 255, b: 255 },
+			})
+		},
+		[]
+	)
+
+	const continueDrawing = useMutation(
+		({ setMyPresence, self }, point: Point, e: React.PointerEvent) => {
+			const draft = self.presence.pencilDraft
+
+			if (
+				canvasState.mode !== CanvasMode.PENCIL ||
+				e.buttons !== 1 ||
+				draft === null
+			)
+				return
+
+			setMyPresence({
+				cursor: point,
+				pencilDraft:
+					draft.length === 1 &&
+					draft[0][0] === point.x &&
+					draft[0][1] === point.y
+						? draft
+						: [...draft, [point.x, point.y, e.pressure]],
+			})
+		},
+		[canvasState.mode]
+	)
+
+	const insertPath = useMutation(({ storage, self, setMyPresence }) => {
+		const layers = storage.get('layers')
+		const draft = self.presence.pencilDraft
+
+		if (!draft || draft.length < 2 || layers.size >= 200)
+			return setMyPresence({ pencilDraft: null })
+
+		const id = nanoid()
+		layers.set(
+			id,
+			new LiveObject(penPointsToPathLayer(draft, { r: 255, g: 255, b: 255 }))
+		)
+
+		const ids = storage.get('layerIds')
+		ids.push(id)
+
+		setMyPresence({ pencilDraft: null })
+		setCanvasState({ mode: CanvasMode.PENCIL })
+	}, [])
+
 	const selections = useOthersMapped(other => other.presence.selection)
 
 	const layerSelectionColor = useMemo(() => {
@@ -202,6 +261,7 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 		const point = pointerEventToCanvasPoint(e, camera)
 
 		if (canvasState.mode === CanvasMode.NONE) deselectLayers()
+		else if (canvasState.mode === CanvasMode.PENCIL) insertPath()
 		else if (canvasState.mode === CanvasMode.INSERTING)
 			insertLayer(canvasState.layerType, point)
 		else if (canvasState.mode === CanvasMode.PRESSING) selectLayers(point)
@@ -218,9 +278,18 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 			else if (canvasState.mode === CanvasMode.RESIZING) resizeLayer(e)
 			else if (canvasState.mode === CanvasMode.PRESSING)
 				drawSelectionNet(cursor)
+			else if (canvasState.mode === CanvasMode.PENCIL)
+				continueDrawing(cursor, e)
 			setMyPresence({ cursor })
 		},
-		[camera, canvasState]
+		[
+			camera,
+			canvasState,
+			translateLayers,
+			resizeLayer,
+			drawSelectionNet,
+			continueDrawing,
+		]
 	)
 
 	const onPointerLeave = useMutation(
@@ -233,17 +302,25 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 	)
 
 	const onPointerDown = (e: React.PointerEvent) => {
-		if (canvasState.mode !== CanvasMode.NONE) return
+		if (
+			canvasState.mode !== CanvasMode.NONE &&
+			canvasState.mode !== CanvasMode.PENCIL
+		)
+			return
 
 		e.stopPropagation()
 		const point = pointerEventToCanvasPoint(e, camera)
 
+		if (canvasState.mode === CanvasMode.PENCIL) {
+			startDrawing(point, e.pressure)
+		} else {
+			setCanvasState({
+				mode: CanvasMode.PRESSING,
+				initialPoint: point,
+				current: point,
+			})
+		}
 		deselectLayers()
-		setCanvasState({
-			mode: CanvasMode.PRESSING,
-			initialPoint: point,
-			current: point,
-		})
 	}
 
 	const onLayerPointerDown = useMutation(
@@ -336,6 +413,14 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 					))}
 					<SelectionBox onResizePointerDown={onResizePointerDown} />
 					<Cursors />
+					{pencilDraft != null && pencilDraft.length > 0 && (
+						<Path
+							points={pencilDraft}
+							fill={colorTypeToRGB({ r: 255, g: 255, b: 255 })}
+							x={0}
+							y={0}
+						/>
+					)}
 					{canvasState.mode === CanvasMode.PRESSING && (
 						<SelectionNet
 							initial={canvasState.initialPoint}
