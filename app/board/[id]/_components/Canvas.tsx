@@ -4,7 +4,7 @@ import { Id } from '@/convex/_generated/dataModel'
 import Info from './info'
 import Participants from './participants'
 import Toolbar from './toolbar'
-import { useCallback, useMemo, useState } from 'react'
+import { KeyboardEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import {
 	Camera,
 	CanvasMode,
@@ -43,6 +43,7 @@ import SelectionBox from './SelectionBox'
 import SelectionTools from './SelectionTools'
 import SelectionNet from './SelectionNet'
 import Path from '@/components/Path'
+import { useDisableScrollBounce } from '@/hooks/use-disable-scroll-bounce'
 
 const Canvas = ({ id }: { id: Id<'boards'> }) => {
 	const [canvasState, setCanvasState] = useState<CanvasState>({
@@ -57,6 +58,7 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 	const canUndo = useCanUndo()
 	const canRedo = useCanRedo()
 	const history = useHistory()
+	useDisableScrollBounce()
 
 	const insertLayer = useMutation(
 		(
@@ -376,6 +378,27 @@ const Canvas = ({ id }: { id: Id<'boards'> }) => {
 		}
 		setMyPresence({ selection: [] })
 	}, [])
+
+	useEffect(() => {
+		function onKeyDown(e: globalThis.KeyboardEvent) {
+			switch (e.key) {
+				case 'z': {
+					if (e.ctrlKey || e.metaKey) {
+						if (e.shiftKey) {
+							history.redo()
+						} else history.undo()
+						break
+					}
+				}
+			}
+		}
+
+		document.addEventListener('keydown', onKeyDown)
+
+		return () => {
+			document.removeEventListener('keydown', onKeyDown)
+		}
+	}, [deleteLayers, history])
 
 	return (
 		<div className='relative h-full'>
